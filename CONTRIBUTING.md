@@ -29,7 +29,7 @@ Este proyecto sigue un código de conducta basado en el respeto mutuo:
 ### Reportar Bugs
 
 1. Verifica que el bug no haya sido reportado previamente
-2. Abre un [Issue](https://github.com/tu-usuario/Mafia-Claude-Skills/issues/new)
+2. Abre un [Issue](https://github.com/alexdcd/Mafia-Claude-Skills/issues/new?template=bug-report.md)
 3. Incluye:
    - Descripción clara del problema
    - Pasos para reproducirlo
@@ -232,7 +232,7 @@ git commit -m "docs: actualizar guía de contribución"
 
 Si tienes dudas:
 
-1. Revisa los [Issues existentes](https://github.com/tu-usuario/Mafia-Claude-Skills/issues)
+1. Revisa los [Issues existentes](https://github.com/alexdcd/Mafia-Claude-Skills/issues)
 2. Abre un nuevo Issue con la etiqueta `question`
 3. Sé específico sobre tu pregunta
 

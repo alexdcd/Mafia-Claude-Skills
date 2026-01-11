@@ -131,7 +131,7 @@ IVA soportado:         735,00 € (21%)
 
 ### Formas de contribuir:
 
-1. **🐛 Reportar bugs**: Abre un [issue](https://github.com/tu-usuario/Mafia-Claude-Skills/issues) describiendo el problema
+1. **🐛 Reportar bugs**: Abre un [issue](https://github.com/alexdcd/Mafia-Claude-Skills/issues) describiendo el problema
 2. **💡 Sugerir mejoras**: Propón nuevas funcionalidades o skills
 3. **🔧 Enviar Pull Requests**: Mejora skills existentes o añade nuevas
 4. **📝 Mejorar documentación**: Ayuda a que las instrucciones sean más claras
@@ -140,7 +140,7 @@ IVA soportado:         735,00 € (21%)
 
 ```bash
 # 1. Fork y clona el repo
-git clone https://github.com/tu-usuario/Mafia-Claude-Skills.git
+git clone https://github.com/alexdcd/Mafia-Claude-Skills.git
 
 # 2. Crea una nueva carpeta para tu skill
 mkdir -p skills/mi-nueva-skill
@@ -219,6 +219,6 @@ Las skills incluidas son de uso libre para fines personales y comerciales, sujet
 
 **¿Te ha sido útil?** ⭐ Dale una estrella al repositorio
 
-[Reportar Bug](https://github.com/tu-usuario/Mafia-Claude-Skills/issues) · [Sugerir Skill](https://github.com/tu-usuario/Mafia-Claude-Skills/issues) · [Contribuir](CONTRIBUTING.md)
+[Reportar Bug](https://github.com/alexdcd/Mafia-Claude-Skills/issues/new?template=bug-report.md) · [Sugerir Skill](https://github.com/alexdcd/Mafia-Claude-Skills/issues/new?template=nueva-skill.md) · [Contribuir](CONTRIBUTING.md)
 
 </div>
