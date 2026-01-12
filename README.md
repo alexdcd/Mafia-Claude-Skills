@@ -83,6 +83,9 @@ Mafia-Claude-Skills/
 
 Una skill completa para manejar la contabilidad y fiscalidad de autónomos con cálculos matemáticamente precisos.
 
+> [!CAUTION]
+> **ADVERTENCIA**: Esta skill es una herramienta de apoyo y no sustituye el asesoramiento profesional. Los cálculos y sugerencias generados deben ser revisados por un gestor o profesional cualificado. El uso de esta herramienta se realiza bajo la responsabilidad exclusiva del usuario. Mafia Claude Skills y sus contribuidores no se hacen responsables de errores en las declaraciones fiscales o sanciones derivadas de su uso.
+
 **Características:**
 
 | Función | Descripción |

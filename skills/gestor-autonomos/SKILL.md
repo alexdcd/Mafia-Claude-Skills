@@ -17,6 +17,9 @@ description: >
 
 Skill para gestión contable y fiscal de trabajadores autónomos en España con cálculos matemáticamente precisos.
 
+> [!CAUTION]
+> **ADVERTENCIA**: Esta skill es una herramienta de apoyo y no sustituye el asesoramiento profesional. Los cálculos y sugerencias generados deben ser revisados por un gestor o profesional cualificado. El uso de esta herramienta se realiza bajo la responsabilidad exclusiva del usuario. Mafia Claude Skills y sus contribuidores no se hacen responsables de errores en las declaraciones fiscales o sanciones derivadas de su uso.
+
 ## Principios fundamentales
 
 1. **Precisión matemática obligatoria**: SIEMPRE usar los scripts de Python para cualquier cálculo. NUNCA calcular mentalmente.
