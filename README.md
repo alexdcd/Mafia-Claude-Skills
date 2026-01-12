@@ -46,7 +46,7 @@ Ejemplos de lo que pueden hacer las skills:
 
 ```bash
 # Clona el repositorio
-git clone https://github.com/tu-usuario/Mafia-Claude-Skills.git
+git clone https://github.com/alexdcd/Mafia-Claude-Skills.git
 
 # Añade la skill a tu proyecto
 claude skill add ./Mafia-Claude-Skills/skills/gestor-autonomos
@@ -62,20 +62,15 @@ Incluye el contenido de la skill en el system prompt o como contexto adicional e
 
 ```
 Mafia-Claude-Skills/
-├── skills/                    # Carpeta principal de skills
-│   └── gestor-autonomos/      # Skill de gestión fiscal
-│       ├── SKILL.md           # Instrucciones principales
-│       ├── scripts/           # Scripts de Python
-│       │   ├── calcular_iva.py
-│       │   ├── calcular_irpf.py
-│       │   ├── procesar_facturas.py
-│       │   ├── procesar_stripe.py
-│       │   └── generar_libro.py
-│       └── references/        # Documentación de referencia
-│           └── normativa_fiscal.md
-├── README.md
-├── CONTRIBUTING.md
-└── LICENSE
+├── .github/                   # Plantillas de Issues y Pull Requests
+├── skills/                    # Carpeta principal que contiene todas las skills
+│   ├── nombre-de-la-skill/    # Carpeta individual para cada skill
+│   │   ├── SKILL.md           # Archivo obligatorio con instrucciones (YAML + Markdown)
+│   │   ├── scripts/           # (Opcional) Scripts de apoyo (Python, etc.)
+│   │   └── references/        # (Opcional) Documentación de referencia
+├── README.md                  # Documentación principal
+├── CONTRIBUTING.md            # Guía para colaboradores
+└── LICENSE                    # Licencia del proyecto
 ```
 
 ---
@@ -119,6 +114,21 @@ IVA soportado:         735,00 € (21%)
 💰 IVA A INGRESAR:   1.785,00 €
 
 📅 Plazo: 1-20 Octubre 2024
+```
+
+**Estructura de la skill:**
+
+```
+gestor-autonomos/
+├── SKILL.md           # Instrucciones y lógica fiscal
+├── scripts/           # Lógica de cálculo en Python
+│   ├── calcular_iva.py
+│   ├── calcular_irpf.py
+│   ├── procesar_facturas.py
+│   ├── procesar_stripe.py
+│   └── generar_libro.py
+└── references/        # Documentación de la AEAT
+    └── normativa_fiscal.md
 ```
 
 ➡️ [Ver documentación completa](./skills/gestor-autonomos/SKILL.md)
