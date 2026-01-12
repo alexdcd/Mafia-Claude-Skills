@@ -140,71 +140,103 @@ Ver detalle completo en `references/normativa_fiscal.md`
 3. **Verificar NIFs**: Siempre validar que los NIFs/CIFs sean correctos.
 4. **Coherencia IVA**: El IVA soportado solo es deducible si está vinculado a la actividad.
 
-## Integración con Stripe (Substack, etc.)
+## Integración con Stripe/Substack
 
-Para procesar ingresos de plataformas como Substack que usan Stripe:
+### ⚠️ IMPORTANTE - Diferencia entre Modelo 303 y Modelo 130
 
-### Paso 1: Obtener datos de Stripe
+**Modelo 303 (IVA trimestral):**
+- NO lleva base imponible en la presentación
+- Solo reporta:
+  - Casilla 03: Cuota IVA devengada (21% de clientes UE)
+  - Casilla 60: Exportaciones exentas (base imponible de no-UE)
 
-**Opción A - Con MCP Stripe conectado:**
-Usar el conector MCP de Stripe para listar charges del trimestre:
+**Modelo 130 (IRPF trimestral):**
+- SÍ lleva base imponible (suma de UE + no-UE)
+- Luego resta gastos deducibles (fees)
+- Resultado: rendimiento neto del trimestre
+
+### IMPORTANTE - Reglas fiscales aplicadas
+
+**1. El precio cobrado INCLUYE el IVA (Tax Inclusive)**
+- El importe que cobras al cliente ya tiene el IVA dentro
+- Para extraer la base imponible: `Base = Total / 1.21`
+- NO multiplicar por 0.21 (eso sería añadir IVA encima)
+- Ejemplo: Si cobras 60€ → Base = 49,59€, IVA = 10,41€
+
+**2. La territorialidad se determina por PAÍS, no por moneda**
+- Un cliente de Chile que paga en EUR → Exportación (sin IVA)
+- Un cliente de España que paga en USD → Lleva IVA
+- Prioridad: `country (billing)` > `country (ip)`
+
+**3. Pagos sin país identificado → Criterio conservador (UE)**
+- Si no hay país, se trata como cliente UE (paga IVA)
+- Es más seguro fiscalmente aunque pagues algo más
+
+**4. Los fees (Substack + Stripe) son gastos deducibles**
+- Se restan en el IRPF (Modelo 130)
+- NO afectan al IVA
+
+### Formatos soportados
+
+**CSV de Substack (formato nativo):**
 ```
-Listar todos los charges de Stripe de los últimos 3 meses
+email,date,currency,amount,Substack fee,Stripe fee,...,country (ip),country (billing)
+user@mail.com,02-Oct-25,eur,€60.00,€6.00,€1.15,...,ES,ES
 ```
 
-**Opción B - Exportar CSV desde Stripe Dashboard:**
-1. Ir a Stripe Dashboard → Payments
-2. Filtrar por fechas del trimestre
-3. Exportar a CSV
+**CSV de Stripe Dashboard:**
+```
+id,Amount,Currency,Created (UTC),country (billing),Status,...
+pi_xxx,60.00,eur,2025-10-02,ES,succeeded,...
+```
 
-### Paso 2: Procesar con el script
+### Uso del script
 
 ```bash
-# Desde CSV exportado:
-python3 scripts/procesar_stripe.py --archivo pagos.csv --trimestre 4 --año 2024
+# Procesar CSV de Substack o Stripe:
+python3 scripts/procesar_stripe.py --archivo pagos.csv --trimestre 4 --año 2025
 
-# Desde JSON (MCP):
-python3 scripts/procesar_stripe.py --archivo charges.json --trimestre 4 --año 2024 --formato json
-
-# Con tipos de cambio específicos:
-python3 scripts/procesar_stripe.py --archivo pagos.csv --trimestre 1 --año 2025 --tipo-cambio USD:0.93
+# El script automáticamente:
+# - Detecta formato (Substack o Stripe)
+# - Parsea importes con símbolo (€60.00, CA$140.00)
+# - Extrae base imponible dividiendo por 1.21 (no multiplicando)
+# - Clasifica por PAÍS del cliente (no por moneda)
+# - Calcula fees como gastos deducibles
 ```
 
-### Paso 3: Interpretar resultados
-
-El script genera:
+### Resultados generados
 
 **Para Modelo 303 (IVA):**
-- `base_imponible_ue`: Ingresos de clientes UE (casilla 01)
-- `iva_repercutido_ue`: IVA 21% a declarar (casilla 03)
-- `exportaciones_no_ue`: Van a casilla 60 (exentas)
+- Casilla 03: Cuota IVA a repercutir (21% de la base UE)
+- Casilla 60: Exportaciones exentas (clientes no-UE) - IMPORTANTE: se reporta como base, no como cuota
 
 **Para Modelo 130 (IRPF):**
-- `ingresos_trimestre`: Total de ingresos (UE + no-UE)
+- Base imponible: Suma de bases de clientes UE + no-UE
+- Gastos: Fees de Substack + Stripe (deducibles)
+- Rendimiento neto: Base imponible - Gastos
 
-### Tratamiento fiscal de ingresos Stripe/Substack
-
-**Pagos desde la UE:**
-- Requieren IVA del 21%
-- Si Substack no lo cobra, TÚ debes declararlo
-- Base imponible = importe recibido
-- IVA = base × 21%
-
-**Pagos desde fuera de la UE:**
-- Exentos de IVA (exportación de servicios)
-- Art. 21.2 Ley IVA: servicios a no establecidos en UE
-- Declarar en casilla 60 del modelo 303
-
-**Conversión de monedas:**
-- Usar tipo de cambio del BCE del día del pago
-- O tipo medio del trimestre (más práctico)
-- El script obtiene tipos actuales automáticamente
-
-### Países de la UE (referencia)
+### Países UE-27 (referencia)
 
 AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK
 
-**Nota:** Reino Unido (GB) ya NO está en la UE desde 2021.
+**⚠️ Reino Unido (GB/UK) NO está en la UE desde 2021 → Exento**
+
+### Ejemplo práctico
+
+```
+Pago de 60€ desde España (ES):
+  Base imponible: 60 / 1.21 = 49,59€
+  IVA incluido:   60 - 49,59 = 10,41€
+
+Pago de 60€ desde Chile (CL):
+  Base imponible: 60€ (total, sin división)
+  IVA: 0€ (exportación exenta)
+
+Pago de 85€ sin país identificado:
+  → Tratado como UE (conservador)
+  Base imponible: 85 / 1.21 = 70,25€
+  IVA incluido:   85 - 70,25 = 14,75€
+```
 
 ## Consultas normativas
 

@@ -1,493 +1,517 @@
 #!/usr/bin/env python3
 """
-Procesador de Ingresos de Stripe para Autónomos en España.
-- Extrae ingresos de un trimestre específico
-- Convierte monedas a EUR
-- Separa pagos UE (requieren IVA) vs no-UE (exentos)
-- Genera resumen para declaraciones trimestrales
+Procesador de Ingresos de Stripe/Substack para Autónomos en España.
 
-Uso con datos JSON de Stripe MCP o CSV exportado.
+Soporta CSVs de:
+- Stripe Dashboard (exportación estándar)
+- Substack (exportación de suscriptores/pagos)
+
+REGLAS FISCALES APLICADAS:
+1. El precio cobrado INCLUYE el IVA (Tax Inclusive)
+   - Para clientes UE: Base = Total / 1.21, IVA = Total - Base
+   - Para clientes no-UE: Base = Total, IVA = 0 (exportación exenta)
+
+2. La territorialidad se determina por PAÍS del cliente, NO por moneda
+   - Prioridad: country (billing) > country (ip)
+   - Un pago en EUR desde Chile → exportación exenta (sin IVA)
+
+3. Los fees (Substack + Stripe) son gastos deducibles para IRPF
 """
 
 import argparse
-import json
 import csv
+import json
 import sys
+import re
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, date
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 import urllib.request
-import urllib.error
 
-# Países de la Unión Europea (2024-2025)
+# Países UE-27 (sin UK desde 2021)
 PAISES_UE = {
-    'AT': 'Austria',
-    'BE': 'Bélgica', 
-    'BG': 'Bulgaria',
-    'HR': 'Croacia',
-    'CY': 'Chipre',
-    'CZ': 'República Checa',
-    'DK': 'Dinamarca',
-    'EE': 'Estonia',
-    'FI': 'Finlandia',
-    'FR': 'Francia',
-    'DE': 'Alemania',
-    'GR': 'Grecia',
-    'HU': 'Hungría',
-    'IE': 'Irlanda',
-    'IT': 'Italia',
-    'LV': 'Letonia',
-    'LT': 'Lituania',
-    'LU': 'Luxemburgo',
-    'MT': 'Malta',
-    'NL': 'Países Bajos',
-    'PL': 'Polonia',
-    'PT': 'Portugal',
-    'RO': 'Rumanía',
-    'SK': 'Eslovaquia',
-    'SI': 'Eslovenia',
-    'ES': 'España',
-    'SE': 'Suecia',
+    'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
+    'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
+    'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE'
 }
 
-# Tipos de cambio por defecto (actualizables)
-# Se intentará obtener tipos actuales de API
-TIPOS_CAMBIO_DEFAULT = {
+NOMBRES_PAISES = {
+    'AT': 'Austria', 'BE': 'Bélgica', 'BG': 'Bulgaria', 'HR': 'Croacia',
+    'CY': 'Chipre', 'CZ': 'Rep. Checa', 'DK': 'Dinamarca', 'EE': 'Estonia',
+    'FI': 'Finlandia', 'FR': 'Francia', 'DE': 'Alemania', 'GR': 'Grecia',
+    'HU': 'Hungría', 'IE': 'Irlanda', 'IT': 'Italia', 'LV': 'Letonia',
+    'LT': 'Lituania', 'LU': 'Luxemburgo', 'MT': 'Malta', 'NL': 'Países Bajos',
+    'PL': 'Polonia', 'PT': 'Portugal', 'RO': 'Rumanía', 'SK': 'Eslovaquia',
+    'SI': 'Eslovenia', 'ES': 'España', 'SE': 'Suecia',
+    'US': 'EEUU', 'CA': 'Canadá', 'CL': 'Chile', 'PE': 'Perú',
+    'MX': 'México', 'AR': 'Argentina', 'CO': 'Colombia', 'GB': 'Reino Unido',
+}
+
+# Tipos de cambio por defecto
+TIPOS_CAMBIO = {
     'EUR': Decimal('1.0'),
     'USD': Decimal('0.92'),
     'GBP': Decimal('1.17'),
-    'CHF': Decimal('1.05'),
-    'JPY': Decimal('0.0061'),
     'CAD': Decimal('0.68'),
-    'AUD': Decimal('0.60'),
+    'CHF': Decimal('1.05'),
     'MXN': Decimal('0.054'),
-    'BRL': Decimal('0.16'),
-    'PLN': Decimal('0.23'),
-    'SEK': Decimal('0.087'),
-    'DKK': Decimal('0.134'),
-    'NOK': Decimal('0.084'),
-    'CZK': Decimal('0.040'),
-    'HUF': Decimal('0.0025'),
-    'RON': Decimal('0.20'),
-    'BGN': Decimal('0.51'),
-    'HRK': Decimal('0.133'),
+    'CLP': Decimal('0.00092'),
+    'PEN': Decimal('0.25'),
 }
 
-def redondear_centimos(valor: Decimal) -> Decimal:
+DIVISOR_IVA = Decimal('1.21')
+
+def redondear(valor: Decimal) -> Decimal:
     """Redondea a 2 decimales."""
     return valor.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
 
-def obtener_tipos_cambio_online() -> Dict[str, Decimal]:
-    """Intenta obtener tipos de cambio actuales del BCE."""
+def parsear_importe(valor: str) -> Tuple[Decimal, str]:
+    """
+    Parsea un importe con símbolo de moneda.
+    Ejemplos: '€60.00', 'CA$140.00', '$50.00', '60.00'
+    Returns: (importe, moneda)
+    """
+    if not valor or valor.strip() == '':
+        return Decimal('0'), 'EUR'
+    
+    valor = str(valor).strip()
+    
+    # Detectar moneda por símbolo
+    moneda = 'EUR'
+    if valor.startswith('€'):
+        moneda = 'EUR'
+        valor = valor[1:]
+    elif valor.startswith('CA$'):
+        moneda = 'CAD'
+        valor = valor[3:]
+    elif valor.startswith('$'):
+        moneda = 'USD'
+        valor = valor[1:]
+    elif valor.startswith('£'):
+        moneda = 'GBP'
+        valor = valor[1:]
+    
+    # Limpiar y convertir
+    valor = valor.replace(',', '.').replace(' ', '').strip()
     try:
-        # Usar API pública del BCE o alternativa
-        url = "https://api.exchangerate-api.com/v4/latest/EUR"
-        with urllib.request.urlopen(url, timeout=5) as response:
-            data = json.loads(response.read().decode())
-            rates = {}
-            for currency, rate in data.get('rates', {}).items():
-                # Invertir porque necesitamos X -> EUR
-                if rate > 0:
-                    rates[currency] = redondear_centimos(Decimal('1') / Decimal(str(rate)))
-            rates['EUR'] = Decimal('1.0')
-            return rates
-    except Exception as e:
-        print(f"⚠️  No se pudieron obtener tipos de cambio online: {e}", file=sys.stderr)
-        print("   Usando tipos de cambio por defecto.", file=sys.stderr)
-        return TIPOS_CAMBIO_DEFAULT
+        return Decimal(valor), moneda
+    except:
+        return Decimal('0'), moneda
 
-def convertir_a_euros(
-    importe: Decimal, 
-    moneda: str, 
-    tipos_cambio: Dict[str, Decimal]
-) -> Tuple[Decimal, Decimal]:
+def parsear_fecha(valor: str) -> Optional[date]:
     """
-    Convierte un importe a euros.
-    Returns: (importe_eur, tipo_cambio_usado)
+    Parsea fechas en múltiples formatos.
+    Substack: '02-Oct-25', '15-Nov-25'
+    Stripe: '2025-10-02', '2025-10-02 14:30:00'
     """
+    if not valor:
+        return None
+    
+    valor = str(valor).strip()
+    
+    # Formato Substack: DD-MMM-YY
+    try:
+        return datetime.strptime(valor, '%d-%b-%y').date()
+    except:
+        pass
+    
+    # Formato ISO: YYYY-MM-DD
+    try:
+        return datetime.strptime(valor.split(' ')[0].split('T')[0], '%Y-%m-%d').date()
+    except:
+        pass
+    
+    # Formato europeo: DD/MM/YYYY
+    try:
+        return datetime.strptime(valor, '%d/%m/%Y').date()
+    except:
+        pass
+    
+    return None
+
+def obtener_pais(pago: Dict) -> Optional[str]:
+    """
+    Obtiene el país del cliente.
+    Prioridad: country (billing) > country (ip) > otros
+    
+    IMPORTANTE: Si hay country (billing), usarlo aunque esté vacío country (ip)
+    """
+    # Prioridad 1: country (billing)
+    for campo in ['country (billing)', 'Country (billing)', 'billing_country']:
+        pais = pago.get(campo, '').strip().upper()
+        if pais and pais not in ['', 'NULL', 'NONE', 'N/A']:
+            return pais
+    
+    # Prioridad 2: country (ip) - solo si no hay billing
+    for campo in ['country (ip)', 'Country (ip)', 'ip_country']:
+        pais = pago.get(campo, '').strip().upper()
+        if pais and pais not in ['', 'NULL', 'NONE', 'N/A']:
+            return pais
+    
+    # Otros campos
+    for campo in ['Country', 'country', 'Card Country']:
+        pais = pago.get(campo, '').strip().upper()
+        if pais and pais not in ['', 'NULL', 'NONE', 'N/A']:
+            return pais
+    
+    return None
+
+def es_ue(pais: str) -> bool:
+    """Verifica si un país está en la UE-27."""
+    return pais.upper() in PAISES_UE if pais else False
+
+def convertir_a_eur(importe: Decimal, moneda: str) -> Tuple[Decimal, Decimal]:
+    """Convierte a EUR. Returns: (importe_eur, tipo_cambio)"""
     moneda = moneda.upper()
     if moneda == 'EUR':
         return importe, Decimal('1.0')
-    
-    tipo = tipos_cambio.get(moneda)
-    if tipo is None:
-        raise ValueError(f"Moneda no soportada: {moneda}. Añádela a tipos_cambio.")
-    
-    importe_eur = redondear_centimos(importe * tipo)
-    return importe_eur, tipo
+    tc = TIPOS_CAMBIO.get(moneda, Decimal('1.0'))
+    return redondear(importe * tc), tc
 
-def es_pais_ue(codigo_pais: str) -> bool:
-    """Verifica si un país está en la UE."""
-    return codigo_pais.upper() in PAISES_UE
-
-def calcular_trimestre(fecha: date) -> Tuple[int, int]:
-    """Retorna (trimestre, año) de una fecha."""
-    trimestre = (fecha.month - 1) // 3 + 1
-    return trimestre, fecha.year
-
-def procesar_pagos_stripe(
+def procesar_substack_stripe(
     pagos: List[Dict],
     trimestre: int,
-    año: int,
-    tipos_cambio: Dict[str, Decimal] = None
+    año: int
 ) -> Dict:
     """
-    Procesa una lista de pagos de Stripe.
-    
-    Args:
-        pagos: Lista de objetos de pago (de MCP o CSV)
-        trimestre: 1-4
-        año: Año fiscal
-        tipos_cambio: Diccionario de conversión de monedas
-    
-    Returns:
-        Resumen con pagos UE, no-UE, totales y desglose
+    Procesa pagos de Substack o Stripe.
     """
-    if tipos_cambio is None:
-        tipos_cambio = obtener_tipos_cambio_online()
-    
-    # Calcular fechas del trimestre
+    # Fechas del trimestre
     mes_inicio = (trimestre - 1) * 3 + 1
     mes_fin = trimestre * 3
     fecha_inicio = date(año, mes_inicio, 1)
-    if mes_fin == 12:
-        fecha_fin = date(año, 12, 31)
-    else:
-        fecha_fin = date(año, mes_fin + 1, 1)
+    fecha_fin = date(año + 1, 1, 1) if mes_fin == 12 else date(año, mes_fin + 1, 1)
     
-    # Estructuras para resultados
+    # Acumuladores
     pagos_ue = []
     pagos_no_ue = []
     pagos_sin_pais = []
     
-    total_ue_eur = Decimal('0')
-    total_no_ue_eur = Decimal('0')
-    total_sin_pais_eur = Decimal('0')
+    total_bruto_ue = Decimal('0')
+    total_base_ue = Decimal('0')
+    total_iva_ue = Decimal('0')
+    total_base_no_ue = Decimal('0')
+    total_sin_pais = Decimal('0')
     
-    conversiones_realizadas = {}
+    total_substack_fee = Decimal('0')
+    total_stripe_fee = Decimal('0')
+    
+    conversiones = {}
+    paises_ue = {}
+    paises_no_ue = {}
     
     for pago in pagos:
-        # Extraer datos del pago (compatible con estructura Stripe)
-        # Stripe devuelve amount en centavos
         try:
-            # Detectar formato (MCP JSON vs CSV)
-            if 'amount' in pago:
-                # Formato Stripe API/MCP (centavos)
-                importe_cents = int(pago.get('amount', 0))
-                importe = Decimal(importe_cents) / Decimal('100')
-            elif 'Amount' in pago:
-                # Formato CSV exportado
-                importe = Decimal(str(pago.get('Amount', '0')).replace(',', '.'))
-            else:
+            # Parsear importe
+            amount_raw = pago.get('amount', pago.get('Amount', '0'))
+            importe, moneda_detectada = parsear_importe(amount_raw)
+            
+            if importe <= 0:
                 continue
             
-            moneda = pago.get('currency', pago.get('Currency', 'EUR')).upper()
-            
-            # Fecha del pago
-            fecha_raw = pago.get('created', pago.get('Created (UTC)', pago.get('Date', '')))
-            if isinstance(fecha_raw, int):
-                # Timestamp Unix
-                fecha_pago = datetime.fromtimestamp(fecha_raw).date()
-            elif isinstance(fecha_raw, str) and fecha_raw:
-                # String de fecha
-                for fmt in ['%Y-%m-%d', '%d/%m/%Y', '%Y-%m-%d %H:%M:%S', '%Y-%m-%dT%H:%M:%S']:
-                    try:
-                        fecha_pago = datetime.strptime(fecha_raw.split('T')[0].split(' ')[0], fmt.split(' ')[0]).date()
-                        break
-                    except:
-                        continue
-                else:
-                    fecha_pago = None
+            # Moneda (puede venir en columna separada)
+            moneda = pago.get('currency', pago.get('Currency', moneda_detectada)).upper()
+            if moneda in ['EUR', 'CAD', 'USD', 'GBP']:
+                pass
             else:
-                fecha_pago = None
+                moneda = moneda_detectada
+            
+            # Parsear fecha
+            fecha_raw = pago.get('date', pago.get('Date', pago.get('created', pago.get('Created (UTC)', ''))))
+            fecha = parsear_fecha(fecha_raw)
             
             # Filtrar por trimestre
-            if fecha_pago:
-                if not (fecha_inicio <= fecha_pago < fecha_fin):
-                    continue
-            
-            # Estado del pago (solo succeeded/paid)
-            status = pago.get('status', pago.get('Status', 'succeeded')).lower()
-            if status not in ['succeeded', 'paid', 'complete']:
+            if fecha and not (fecha_inicio <= fecha < fecha_fin):
                 continue
             
-            # País del cliente
-            # Intentar múltiples campos donde puede estar el país
-            pais = None
-            
-            # Desde billing_details
-            billing = pago.get('billing_details', {})
-            if isinstance(billing, dict):
-                address = billing.get('address', {})
-                if isinstance(address, dict):
-                    pais = address.get('country')
-            
-            # Desde payment_method_details
-            if not pais:
-                pm_details = pago.get('payment_method_details', {})
-                if isinstance(pm_details, dict):
-                    card = pm_details.get('card', {})
-                    if isinstance(card, dict):
-                        pais = card.get('country')
-            
-            # Desde campos directos (CSV)
-            if not pais:
-                pais = pago.get('Card Country', pago.get('Country', pago.get('customer_country')))
+            # País (billing > ip)
+            pais = obtener_pais(pago)
             
             # Convertir a EUR
-            importe_eur, tipo_cambio = convertir_a_euros(importe, moneda, tipos_cambio)
+            importe_eur, tc = convertir_a_eur(importe, moneda)
             
-            # Registrar conversión si no es EUR
+            # Registrar conversión
             if moneda != 'EUR':
-                if moneda not in conversiones_realizadas:
-                    conversiones_realizadas[moneda] = {
-                        'tipo_cambio': str(tipo_cambio),
-                        'total_original': Decimal('0'),
-                        'total_eur': Decimal('0'),
-                        'num_pagos': 0
-                    }
-                conversiones_realizadas[moneda]['total_original'] += importe
-                conversiones_realizadas[moneda]['total_eur'] += importe_eur
-                conversiones_realizadas[moneda]['num_pagos'] += 1
+                if moneda not in conversiones:
+                    conversiones[moneda] = {'tc': str(tc), 'original': Decimal('0'), 'eur': Decimal('0'), 'count': 0}
+                conversiones[moneda]['original'] += importe
+                conversiones[moneda]['eur'] += importe_eur
+                conversiones[moneda]['count'] += 1
             
-            # Datos del pago procesado
-            pago_procesado = {
-                'id': pago.get('id', pago.get('id (metadata)', '')),
-                'fecha': str(fecha_pago) if fecha_pago else 'N/A',
-                'importe_original': str(importe),
-                'moneda': moneda,
-                'importe_eur': str(importe_eur),
-                'tipo_cambio': str(tipo_cambio),
-                'pais': pais.upper() if pais else 'DESCONOCIDO',
-                'email': pago.get('receipt_email', pago.get('Customer Email', '')),
-                'descripcion': pago.get('description', pago.get('Description', ''))[:50]
+            # Fees (Substack y Stripe)
+            substack_fee_raw = pago.get('Substack fee', pago.get('substack_fee', '0'))
+            stripe_fee_raw = pago.get('Stripe fee', pago.get('stripe_fee', '0'))
+            
+            substack_fee, _ = parsear_importe(substack_fee_raw)
+            stripe_fee, _ = parsear_importe(stripe_fee_raw)
+            
+            # Convertir fees a EUR (misma moneda que el pago)
+            substack_fee_eur, _ = convertir_a_eur(substack_fee, moneda)
+            stripe_fee_eur, _ = convertir_a_eur(stripe_fee, moneda)
+            
+            total_substack_fee += substack_fee_eur
+            total_stripe_fee += stripe_fee_eur
+            
+            # Calcular desglose IVA
+            pais_es_ue = es_ue(pais) if pais else None
+            
+            # OPCIÓN CONSERVADORA: Sin país → tratar como UE (paga IVA)
+            if pais_es_ue is True or pais_es_ue is None:
+                # UE o sin país: IVA incluido → Base = Total / 1.21
+                base = redondear(importe_eur / DIVISOR_IVA)
+                iva = redondear(importe_eur - base)
+                es_ue_final = True
+            else:
+                # No-UE: Exportación exenta
+                base = importe_eur
+                iva = Decimal('0')
+                es_ue_final = False
+            
+            # Datos del pago
+            pago_proc = {
+                'fecha': str(fecha) if fecha else 'N/A',
+                'email': pago.get('email', pago.get('Customer Email', ''))[:30],
+                'importe_original': f"{importe:.2f} {moneda}",
+                'total_eur': str(importe_eur),
+                'base': str(base),
+                'iva': str(iva),
+                'pais': pais if pais else 'DESCONOCIDO',
+                'substack_fee': str(substack_fee_eur),
+                'stripe_fee': str(stripe_fee_eur),
             }
             
-            # Clasificar por país
-            if pais:
-                pais = pais.upper()
-                if es_pais_ue(pais):
-                    pago_procesado['requiere_iva'] = True
-                    pago_procesado['nombre_pais'] = PAISES_UE.get(pais, pais)
-                    pagos_ue.append(pago_procesado)
-                    total_ue_eur += importe_eur
-                else:
-                    pago_procesado['requiere_iva'] = False
-                    pagos_no_ue.append(pago_procesado)
-                    total_no_ue_eur += importe_eur
+            # Clasificar
+            if es_ue_final:
+                # UE (incluye pagos sin país por criterio conservador)
+                pagos_ue.append(pago_proc)
+                total_bruto_ue += importe_eur
+                total_base_ue += base
+                total_iva_ue += iva
+                pais_key = pais if pais else 'SIN_PAIS'
+                paises_ue[pais_key] = paises_ue.get(pais_key, {'count': 0, 'total': Decimal('0')})
+                paises_ue[pais_key]['count'] += 1
+                paises_ue[pais_key]['total'] += importe_eur
+                if not pais:
+                    pagos_sin_pais.append(pago_proc)
+                    total_sin_pais += importe_eur
             else:
-                pago_procesado['requiere_iva'] = None  # Indeterminado
-                pagos_sin_pais.append(pago_procesado)
-                total_sin_pais_eur += importe_eur
+                # No-UE (exportación)
+                pagos_no_ue.append(pago_proc)
+                total_base_no_ue += base
+                paises_no_ue[pais] = paises_no_ue.get(pais, {'count': 0, 'total': Decimal('0')})
+                paises_no_ue[pais]['count'] += 1
+                paises_no_ue[pais]['total'] += importe_eur
                 
         except Exception as e:
-            print(f"⚠️  Error procesando pago: {e}", file=sys.stderr)
-            continue
+            print(f"⚠️  Error: {e}", file=sys.stderr)
     
-    # Convertir Decimals a strings en conversiones
-    for moneda in conversiones_realizadas:
-        conversiones_realizadas[moneda]['total_original'] = str(
-            redondear_centimos(conversiones_realizadas[moneda]['total_original'])
-        )
-        conversiones_realizadas[moneda]['total_eur'] = str(
-            redondear_centimos(conversiones_realizadas[moneda]['total_eur'])
-        )
+    # Formatear
+    for m in conversiones:
+        conversiones[m]['original'] = str(redondear(conversiones[m]['original']))
+        conversiones[m]['eur'] = str(redondear(conversiones[m]['eur']))
+    for p in paises_ue:
+        paises_ue[p]['total'] = str(redondear(paises_ue[p]['total']))
+    for p in paises_no_ue:
+        paises_no_ue[p]['total'] = str(redondear(paises_no_ue[p]['total']))
     
-    total_general = total_ue_eur + total_no_ue_eur + total_sin_pais_eur
+    total_fees = total_substack_fee + total_stripe_fee
+    total_ingresos = total_base_ue + total_base_no_ue
+    rendimiento_neto = total_ingresos - total_fees
+    total_bruto = total_bruto_ue + total_base_no_ue
     
-    # IVA estimado para pagos UE (21% sobre base imponible)
-    # Base = Total / 1.21 si ya incluye IVA, o Total si hay que añadirlo
-    # En Substack, los precios NO incluyen IVA para clientes UE
-    iva_ue_estimado = redondear_centimos(total_ue_eur * Decimal('0.21'))
+    # Total pagos = UE + no-UE (sin_pais ya está incluido en UE)
+    total_pagos = len(pagos_ue) + len(pagos_no_ue)
     
     return {
         'periodo': {
             'trimestre': trimestre,
             'año': año,
-            'descripcion': f'{trimestre}T {año}',
-            'fecha_inicio': str(fecha_inicio),
-            'fecha_fin': str(fecha_fin)
+            'descripcion': f'{trimestre}T {año}'
         },
         'resumen': {
-            'total_pagos': len(pagos_ue) + len(pagos_no_ue) + len(pagos_sin_pais),
-            'total_eur': str(redondear_centimos(total_general)),
-            'pagos_ue': {
+            'total_pagos': total_pagos,
+            'total_bruto_eur': str(redondear(total_bruto)),
+            'ue': {
                 'cantidad': len(pagos_ue),
-                'total_eur': str(redondear_centimos(total_ue_eur)),
-                'iva_a_declarar_21': str(iva_ue_estimado),
-                'nota': 'Estos pagos requieren IVA. El IVA se calcula sobre la base (21%)'
+                'total_cobrado': str(redondear(total_bruto_ue)),
+                'base_imponible': str(redondear(total_base_ue)),
+                'iva_incluido': str(redondear(total_iva_ue)),
             },
-            'pagos_no_ue': {
+            'no_ue': {
                 'cantidad': len(pagos_no_ue),
-                'total_eur': str(redondear_centimos(total_no_ue_eur)),
-                'nota': 'Pagos fuera de UE - Exentos de IVA (exportación de servicios)'
+                'base_imponible': str(redondear(total_base_no_ue)),
             },
-            'pagos_sin_pais': {
+            'sin_pais': {
                 'cantidad': len(pagos_sin_pais),
-                'total_eur': str(redondear_centimos(total_sin_pais_eur)),
-                'nota': 'País desconocido - Revisar manualmente'
+                'total': str(redondear(total_sin_pais)),
             }
         },
-        'conversiones_moneda': conversiones_realizadas,
-        'para_modelo_303': {
-            'base_imponible_ue': str(redondear_centimos(total_ue_eur)),
-            'iva_repercutido_ue': str(iva_ue_estimado),
-            'exportaciones_no_ue': str(redondear_centimos(total_no_ue_eur)),
-            'total_ingresos': str(redondear_centimos(total_general))
+        'fees': {
+            'substack': str(redondear(total_substack_fee)),
+            'stripe': str(redondear(total_stripe_fee)),
+            'total': str(redondear(total_fees)),
         },
-        'para_modelo_130': {
-            'ingresos_trimestre': str(redondear_centimos(total_general)),
-            'nota': 'Total de ingresos sin IVA para cálculo de IRPF'
+        'paises': {'ue': paises_ue, 'no_ue': paises_no_ue},
+        'conversiones': conversiones,
+        'modelo_303': {
+            'casilla_01_base_21': str(redondear(total_base_ue)),
+            'casilla_03_cuota_21': str(redondear(total_iva_ue)),
+            'casilla_60_exportaciones': str(redondear(total_base_no_ue)),
+        },
+        'modelo_130': {
+            'ingresos': str(redondear(total_ingresos)),
+            'gastos_fees': str(redondear(total_fees)),
+            'rendimiento_neto': str(redondear(rendimiento_neto)),
         },
         'detalle_ue': pagos_ue,
         'detalle_no_ue': pagos_no_ue,
         'detalle_sin_pais': pagos_sin_pais if pagos_sin_pais else None,
-        'fecha_proceso': datetime.now().isoformat()
     }
 
-def cargar_pagos_csv(archivo: str) -> List[Dict]:
-    """Carga pagos desde un CSV exportado de Stripe."""
+def cargar_csv(archivo: str) -> List[Dict]:
     pagos = []
-    try:
-        with open(archivo, 'r', encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                pagos.append(row)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Archivo no encontrado: {archivo}")
+    with open(archivo, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            pagos.append(row)
     return pagos
 
-def cargar_pagos_json(archivo: str) -> List[Dict]:
-    """Carga pagos desde un JSON (output de Stripe MCP)."""
-    try:
-        with open(archivo, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            # Puede ser una lista directa o tener estructura {data: [...]}
-            if isinstance(data, list):
-                return data
-            elif isinstance(data, dict) and 'data' in data:
-                return data['data']
-            else:
-                return [data]
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Archivo no encontrado: {archivo}")
+def cargar_json(archivo: str) -> List[Dict]:
+    with open(archivo, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        return data if isinstance(data, list) else data.get('data', [data])
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Procesador de Ingresos de Stripe para Declaraciones Trimestrales',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description='Procesador de Ingresos Stripe/Substack para Autónomos',
         epilog="""
-Ejemplos de uso:
-  # Procesar CSV exportado de Stripe:
-  python3 procesar_stripe.py --archivo pagos.csv --trimestre 4 --año 2024
-  
-  # Procesar JSON de Stripe MCP:
-  python3 procesar_stripe.py --archivo charges.json --trimestre 1 --año 2025 --formato json
-  
-  # Procesar con tipos de cambio específicos:
-  python3 procesar_stripe.py --archivo pagos.csv --trimestre 4 --año 2024 --tipo-cambio USD:0.93 GBP:1.18
+REGLAS APLICADAS:
+  1. IVA INCLUIDO: Base = Total / 1.21 (para UE)
+  2. Territorialidad por PAÍS (billing > ip), no por moneda
+  3. Fees de Substack/Stripe = gastos deducibles IRPF
 
-Formatos CSV soportados:
-  - Exportación estándar de Stripe Dashboard
-  - Columnas esperadas: Amount, Currency, Created (UTC), Card Country, Status
+Ejemplo: python3 procesar_stripe.py --archivo pagos.csv --trimestre 4 --año 2025
         """
     )
     
-    parser.add_argument('--archivo', type=str, required=True, help='Archivo CSV o JSON con pagos')
-    parser.add_argument('--trimestre', type=int, required=True, choices=[1, 2, 3, 4], help='Trimestre (1-4)')
-    parser.add_argument('--año', type=int, required=True, help='Año fiscal')
-    parser.add_argument('--formato', choices=['csv', 'json'], default='csv', help='Formato del archivo (default: csv)')
-    parser.add_argument('--tipo-cambio', nargs='*', help='Tipos de cambio personalizados (ej: USD:0.93 GBP:1.18)')
-    parser.add_argument('--offline', action='store_true', help='No intentar obtener tipos de cambio online')
-    parser.add_argument('--json', action='store_true', help='Salida en formato JSON')
-    parser.add_argument('--exportar', type=str, help='Exportar resultado a archivo JSON')
+    parser.add_argument('--archivo', required=True)
+    parser.add_argument('--trimestre', type=int, required=True, choices=[1,2,3,4])
+    parser.add_argument('--año', type=int, required=True)
+    parser.add_argument('--formato', choices=['csv', 'json'], default='csv')
+    parser.add_argument('--json', action='store_true', help='Salida JSON')
+    parser.add_argument('--exportar', type=str)
+    parser.add_argument('--offline', action='store_true')
     
     args = parser.parse_args()
     
     try:
-        # Cargar pagos
-        if args.formato == 'json':
-            pagos = cargar_pagos_json(args.archivo)
-        else:
-            pagos = cargar_pagos_csv(args.archivo)
+        pagos = cargar_json(args.archivo) if args.formato == 'json' else cargar_csv(args.archivo)
+        print(f"📥 {len(pagos)} registros cargados", file=sys.stderr)
         
-        print(f"📥 Cargados {len(pagos)} registros de {args.archivo}", file=sys.stderr)
+        resultado = procesar_substack_stripe(pagos, args.trimestre, args.año)
         
-        # Obtener tipos de cambio
-        if args.offline:
-            tipos_cambio = TIPOS_CAMBIO_DEFAULT.copy()
-        else:
-            tipos_cambio = obtener_tipos_cambio_online()
-        
-        # Aplicar tipos de cambio personalizados
-        if args.tipo_cambio:
-            for tc in args.tipo_cambio:
-                try:
-                    moneda, valor = tc.split(':')
-                    tipos_cambio[moneda.upper()] = Decimal(valor)
-                except:
-                    print(f"⚠️  Formato inválido: {tc}. Usar MONEDA:VALOR", file=sys.stderr)
-        
-        # Procesar
-        resultado = procesar_pagos_stripe(pagos, args.trimestre, args.año, tipos_cambio)
-        
-        # Exportar si se solicita
         if args.exportar:
             with open(args.exportar, 'w', encoding='utf-8') as f:
                 json.dump(resultado, f, indent=2, ensure_ascii=False)
-            print(f"✅ Resultado exportado a: {args.exportar}", file=sys.stderr)
+            print(f"✅ Exportado a {args.exportar}", file=sys.stderr)
         
         if args.json:
             print(json.dumps(resultado, indent=2, ensure_ascii=False))
         else:
-            # Mostrar resumen en terminal
-            print("\n" + "="*65)
-            print(f"   INGRESOS STRIPE - {resultado['periodo']['descripcion']}")
-            print("="*65)
-            
             r = resultado['resumen']
-            print(f"\n📊 RESUMEN GENERAL:")
-            print(f"   Total pagos procesados:  {r['total_pagos']}")
-            print(f"   Total en EUR:            {float(r['total_eur']):>12,.2f} €")
+            m303 = resultado['modelo_303']
+            m130 = resultado['modelo_130']
+            fees = resultado['fees']
             
-            print(f"\n🇪🇺 PAGOS UNIÓN EUROPEA (requieren IVA):")
-            print(f"   Cantidad:                {r['pagos_ue']['cantidad']}")
-            print(f"   Base imponible:          {float(r['pagos_ue']['total_eur']):>12,.2f} €")
-            print(f"   IVA a declarar (21%):    {float(r['pagos_ue']['iva_a_declarar_21']):>12,.2f} €")
+            print("\n" + "="*70)
+            print(f"   REPORTE FISCAL STRIPE/SUBSTACK - {resultado['periodo']['descripcion']}")
+            print("="*70)
             
-            print(f"\n🌍 PAGOS FUERA DE UE (exentos IVA):")
-            print(f"   Cantidad:                {r['pagos_no_ue']['cantidad']}")
-            print(f"   Total EUR:               {float(r['pagos_no_ue']['total_eur']):>12,.2f} €")
+            print(f"\n📊 RESUMEN GENERAL")
+            print(f"   Total pagos procesados:        {r['total_pagos']}")
+            print(f"   Total cobrado (Bruto):     {float(r['total_bruto_eur']):>12,.2f} EUR")
             
-            if r['pagos_sin_pais']['cantidad'] > 0:
-                print(f"\n⚠️  PAGOS SIN PAÍS (revisar):")
-                print(f"   Cantidad:                {r['pagos_sin_pais']['cantidad']}")
-                print(f"   Total EUR:               {float(r['pagos_sin_pais']['total_eur']):>12,.2f} €")
+            print(f"\n{'-'*70}")
+            print(f"1. INGRESOS SUJETOS A IVA (CLIENTES UE)")
+            print(f"{'-'*70}")
+            print(f"   Pagos UE:                      {r['ue']['cantidad']}")
+            print(f"   Total cobrado (Bruto):     {float(r['ue']['total_cobrado']):>12,.2f} EUR")
+            print(f"\n   DESGLOSE (IVA incluido):")
+            print(f"   Base Imponible:            {float(r['ue']['base_imponible']):>12,.2f} EUR")
+            print(f"   IVA a repercutir (21%):    {float(r['ue']['iva_incluido']):>12,.2f} EUR")
             
-            # Conversiones de moneda
-            if resultado['conversiones_moneda']:
-                print(f"\n💱 CONVERSIONES DE MONEDA:")
-                for moneda, conv in resultado['conversiones_moneda'].items():
-                    print(f"   {moneda}: {conv['num_pagos']} pagos, "
-                          f"{float(conv['total_original']):,.2f} {moneda} → "
-                          f"{float(conv['total_eur']):,.2f} € (TC: {conv['tipo_cambio']})")
+            if resultado['paises']['ue']:
+                print(f"\n   Por país:")
+                for p, d in sorted(resultado['paises']['ue'].items(), key=lambda x: float(x[1]['total']), reverse=True):
+                    if p == 'SIN_PAIS':
+                        print(f"     ⚠️  SIN PAÍS (tratado como UE): {d['count']} pagos, {float(d['total']):,.2f} €")
+                    else:
+                        nombre = NOMBRES_PAISES.get(p, p)
+                        print(f"     {p} ({nombre}): {d['count']} pagos, {float(d['total']):,.2f} €")
             
-            print("\n" + "-"*65)
-            print("📋 DATOS PARA DECLARACIONES:")
-            m303 = resultado['para_modelo_303']
-            print(f"\n   MODELO 303 (IVA):")
-            print(f"   · Base imponible UE:     {float(m303['base_imponible_ue']):>12,.2f} €")
-            print(f"   · IVA repercutido:       {float(m303['iva_repercutido_ue']):>12,.2f} €")
-            print(f"   · Exportaciones no-UE:   {float(m303['exportaciones_no_ue']):>12,.2f} €")
+            print(f"\n{'-'*70}")
+            print(f"2. INGRESOS EXENTOS DE IVA (EXPORTACIONES / NO-UE)")
+            print(f"{'-'*70}")
+            print(f"   Pagos no-UE:                   {r['no_ue']['cantidad']}")
+            print(f"   Base Imponible (= Total):  {float(r['no_ue']['base_imponible']):>12,.2f} EUR")
             
-            m130 = resultado['para_modelo_130']
-            print(f"\n   MODELO 130 (IRPF):")
-            print(f"   · Ingresos trimestre:    {float(m130['ingresos_trimestre']):>12,.2f} €")
+            if resultado['paises']['no_ue']:
+                print(f"\n   Por país:")
+                for p, d in sorted(resultado['paises']['no_ue'].items(), key=lambda x: float(x[1]['total']), reverse=True):
+                    nombre = NOMBRES_PAISES.get(p, p)
+                    print(f"     {p} ({nombre}): {d['count']} pagos, {float(d['total']):,.2f} €")
             
-            print("="*65 + "\n")
+            if resultado['conversiones']:
+                print(f"\n{'-'*70}")
+                print(f"💱 CONVERSIONES DE MONEDA")
+                print(f"{'-'*70}")
+                for m, d in resultado['conversiones'].items():
+                    print(f"   {m}: {d['count']} pagos, TC={d['tc']}")
+                    print(f"        {float(d['original']):,.2f} {m} → {float(d['eur']):,.2f} EUR")
+            
+            print(f"\n{'-'*70}")
+            print(f"3. GASTOS DEDUCIBLES (COMISIONES / FEES)")
+            print(f"{'-'*70}")
+            print(f"   Substack Fees:             {float(fees['substack']):>12,.2f} EUR")
+            print(f"   Stripe Fees:               {float(fees['stripe']):>12,.2f} EUR")
+            print(f"   TOTAL GASTOS:              {float(fees['total']):>12,.2f} EUR")
+            
+            print(f"\n{'='*70}")
+            print(f"📋 IMPORTES PARA DECLARACIONES")
+            print(f"{'='*70}")
+            
+            print(f"""
+   ┌────────────────────────────────────────────────────────────────┐
+   │  MODELO 303 - IVA TRIMESTRAL                                   │
+   ├────────────────────────────────────────────────────────────────┤
+   │  Casilla 01 (Base imponible 21%):          {float(m303['casilla_01_base_21']):>12,.2f} EUR  │
+   │  Casilla 03 (Cuota devengada 21%):         {float(m303['casilla_03_cuota_21']):>12,.2f} EUR  │
+   │  Casilla 60 (Exportaciones exentas):       {float(m303['casilla_60_exportaciones']):>12,.2f} EUR  │
+   └────────────────────────────────────────────────────────────────┘
+""")
+            print(f"""   ┌────────────────────────────────────────────────────────────────┐
+   │  MODELO 130 - PAGO FRACCIONADO IRPF                            │
+   ├────────────────────────────────────────────────────────────────┤
+   │  Base imponible (UE + no-UE):             {float(m130['ingresos']):>12,.2f} EUR  │
+   │  Gastos deducibles (fees):                 {float(m130['gastos_fees']):>12,.2f} EUR  │
+   │  ────────────────────────────────────────────────────────────  │
+   │  Rendimiento Neto:                         {float(m130['rendimiento_neto']):>12,.2f} EUR  │
+   └────────────────────────────────────────────────────────────────┘
+""")
+            print(f"{'-'*70}")
+            print(f"📌 METODOLOGÍA APLICADA")
+            print(f"{'-'*70}")
+            print(f"   • IVA INCLUIDO: Base = Total ÷ 1.21 para clientes UE")
+            print(f"   • Territorialidad: Por PAÍS (billing > ip), no por moneda")
+            print(f"   • Sin país identificado: Tratado como UE (criterio conservador)")
+            print(f"   • Exportaciones: Clientes no-UE exentos de IVA")
+            print(f"   • Fees: Gastos deducibles para IRPF (no para IVA)")
+            print("="*70 + "\n")
             
     except Exception as e:
         print(f"❌ Error: {e}", file=sys.stderr)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":

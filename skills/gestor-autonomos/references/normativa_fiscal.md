@@ -190,19 +190,27 @@ Los gastos deben estar directamente relacionados con los ingresos:
 
 Los ingresos por contenido digital (newsletters, cursos online, membresías) tributan como rendimientos de actividades económicas.
 
-**IVA según ubicación del cliente:**
+**IMPORTANTE: El precio cobrado INCLUYE el IVA**
+
+Cuando cobras 60€ a un suscriptor, ese importe YA incluye el IVA:
+- Base imponible = 60 ÷ 1.21 = 49,59€
+- IVA = 60 - 49,59 = 10,41€
+
+NO se añade IVA encima del precio cobrado.
+
+**IVA según ubicación del cliente (por PAÍS, no por moneda):**
 
 | Cliente | Tratamiento IVA |
 |---------|-----------------|
-| España | IVA 21% |
-| Otro país UE (particular) | IVA 21% (regla de localización) |
-| Otro país UE (empresa con NIF-IVA) | Inversión sujeto pasivo (0%) |
-| Fuera de UE | Exento - Exportación de servicios |
+| España | Base = Total ÷ 1.21, IVA = diferencia |
+| Otro país UE-27 | Base = Total ÷ 1.21, IVA = diferencia |
+| Fuera de UE (USA, LATAM, UK) | Base = Total, IVA = 0 (exportación) |
 
-**Regla de localización servicios electrónicos:**
+**Regla de territorialidad:**
 - Art. 70.Uno.4º y 8º Ley IVA
-- Servicios electrónicos a particulares UE: IVA del país del prestador (España = 21%)
-- Opción OSS para declarar IVA en cada país UE (si superas 10.000€/año en UE)
+- La territorialidad se determina por el PAÍS del cliente
+- Un pago en EUR desde Chile → Exportación (sin IVA)
+- Un pago en USD desde España → Lleva IVA
 
 **Conversión de monedas:**
 - Usar tipo de cambio BCE del día de la transacción
