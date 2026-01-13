@@ -4,6 +4,7 @@ Una colección de Claude Skills en español para potenciar tus flujos de trabajo
 
 [![Licencia](https://img.shields.io/badge/Licencia-Apache%202.0-blue.svg)](LICENSE)
 [![Contribuciones Bienvenidas](https://img.shields.io/badge/Contribuciones-Bienvenidas-brightgreen.svg)](CONTRIBUTING.md)
+![Uploading Gemini_Generated_Image_xrdr9pxrdr9pxrdr.png…]()
 
 ---
 
