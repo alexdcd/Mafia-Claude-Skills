@@ -31,6 +31,7 @@ Ejemplos de lo que pueden hacer las skills:
 | Skill | Descripción | Categoría |
 |-------|-------------|-----------|
 | [**Gestor Autónomos**](./skills/gestor-autonomos/) | Gestión contable y fiscal para autónomos en España. Cálculo de IVA, IRPF, procesamiento de Stripe/Substack. | 💼 Finanzas |
+| [**Landing Page Mastery**](./skills/landing-page-mastery/) | Sistema experto para crear y optimizar landing pages de alta conversión (SaaS, cursos, ebooks). | 🎨 Marketing |
 
 ---
 
@@ -137,6 +138,44 @@ gestor-autonomos/
 ```
 
 ➡️ [Ver documentación completa](./skills/gestor-autonomos/SKILL.md)
+
+---
+
+### 🎨 Landing Page Mastery
+
+> **Sistema experto para crear y optimizar landing pages de alta conversión.**
+
+Una skill diseñada para marketers y fundadores que necesitan crear páginas de venta efectivas o mejorar las existentes basándose en datos y psicología del usuario.
+
+**Características:**
+
+| Función | Descripción |
+|---------|-------------|
+| 🏗️ Estructuras | Plantillas probadas para SaaS, Cursos, Ebooks y Newsletters |
+| ✍️ Copywriting | Generación de textos con frameworks (PAS, AIDA, STAR) |
+| 🔍 Auditoría | Checklist de 100 puntos para optimizar conversiones |
+| 🎨 Diseño | Guías de UX/UI, color y tipografía orientadas a conversión |
+| 📊 Benchmarks | Comparativa con métricas de mercado (2026) |
+
+**Casos de uso:**
+- Crear una landing page desde cero para un nuevo SaaS.
+- Auditar una página que no está convirtiendo bien.
+- Redactar los textos de venta.
+
+**Estructura de la skill:**
+
+```
+landing-page-mastery/
+├── SKILL.md           # Instrucciones y flujos de trabajo
+└── references/        # Base de conocimiento experta
+    ├── structures.md      # Estructuras por tipo de producto
+    ├── copywriting.md     # Fórmulas de redacción
+    ├── design.md          # Guías visuales
+    ├── audit-checklist.md # Auditoría paso a paso
+    └── conversion-elements.md # Elementos de conversión
+```
+
+➡️ [Ver documentación completa](./skills/landing-page-mastery/SKILL.md)
 
 ---
 
