@@ -1,6 +1,6 @@
 # 🎩 Mafia Claude Skills
 
-Una colección de Claude Skills en español para potenciar tus flujos de trabajo con Claude AI.
+Una colección de Claude Skills en español para potenciar tus flujos de trabajo con AI.
 
 ![Mafia Claude Skills](mafia_claude_skills.png)
 
