@@ -250,8 +250,7 @@ Descripción detallada de la skill y sus capacidades.
 - [API de Claude](https://docs.anthropic.com)
 
 ### Comunidad
-- [Awesome Claude Skills](https://github.com/ComposioHQ/awesome-claude-skills)
-- [Discord de Claude](https://discord.gg/anthropic)
+- [La Mafia IA](https://aimafia.substack.com/)
 
 ---
 
