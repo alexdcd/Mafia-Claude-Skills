@@ -1,0 +1,9 @@
+[
+  {
+    "name": "vercel-react-best-practices",
+    "repo": "langgenius/dify",
+    "path": ".claude/skills/vercel-react-best-practices",
+    "description": "Best practices for React and Next.js from Vercel",
+    "local_path": "skills/vercel-react-best-practices"
+  }
+]

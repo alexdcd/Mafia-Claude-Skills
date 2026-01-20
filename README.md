@@ -32,6 +32,7 @@ Ejemplos de lo que pueden hacer las skills:
 |-------|-------------|-----------|
 | [**Gestor Autónomos**](./skills/gestor-autonomos/) | Gestión contable y fiscal para autónomos en España. Cálculo de IVA, IRPF, procesamiento de Stripe/Substack. | 💼 Finanzas |
 | [**Landing Page Mastery**](./skills/landing-page-mastery/) | Sistema experto para crear y optimizar landing pages de alta conversión (SaaS, cursos, ebooks). | 🎨 Marketing |
+| [**Vercel React Best Practices**](./skills/vercel-react-best-practices/) | Guías de optimización de rendimiento para React y Next.js mantenidas por Vercel. (Skill externa sincronizada) | ⚡ Desarrollo |
 
 ---
 
@@ -206,6 +207,20 @@ touch skills/mi-nueva-skill/SKILL.md
 ```
 
 Lee la [guía de contribución](CONTRIBUTING.md) para más detalles.
+
+### Cómo sincronizar skills externas:
+
+Este repositorio incluye un sistema para sincronizar skills desde otros repositorios (como Vercel Best Practices).
+
+1. **Configuración**: Las skills externas se definen en `data/external-skills.json`.
+2. **Sincronización**: Para actualizar o instalar estas skills, ejecuta:
+
+```bash
+# Requiere Python 3
+python3 scripts/sync_skills.py
+```
+
+Esto descargará la última versión de las skills definidas en el archivo JSON. Puedes usar este mecanismo para mantener tu repositorio actualizado con las mejores prácticas de la industria.
 
 ---
 
