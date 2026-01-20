@@ -53,3 +53,6 @@ tmp/
 
 # OS
 Thumbs.db
+
+# Local AI Rules
+.cursorrules
