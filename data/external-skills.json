@@ -5,5 +5,12 @@
     "path": ".claude/skills/vercel-react-best-practices",
     "description": "Best practices for React and Next.js from Vercel",
     "local_path": "skills/vercel-react-best-practices"
+  },
+  {
+    "name": "frontend-design",
+    "repo": "anthropics/skills",
+    "path": "skills/frontend-design",
+    "description": "Create distinctive, production-grade frontend interfaces with high design quality",
+    "local_path": "skills/frontend-design"
   }
 ]

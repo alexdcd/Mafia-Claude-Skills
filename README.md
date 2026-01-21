@@ -33,6 +33,7 @@ Ejemplos de lo que pueden hacer las skills:
 | [**Gestor Autónomos**](./skills/gestor-autonomos/) | Gestión contable y fiscal para autónomos en España. Cálculo de IVA, IRPF, procesamiento de Stripe/Substack. | 💼 Finanzas |
 | [**Landing Page Mastery**](./skills/landing-page-mastery/) | Sistema experto para crear y optimizar landing pages de alta conversión (SaaS, cursos, ebooks). | 🎨 Marketing |
 | [**Vercel React Best Practices**](./skills/vercel-react-best-practices/) | Guías de optimización de rendimiento para React y Next.js mantenidas por Vercel. (Skill externa sincronizada) | ⚡ Desarrollo |
+| [**Frontend Design**](./skills/frontend-design/) | Crea interfaces frontend distintivas y de grado de producción con alta calidad de diseño. (Skill de Anthropic) | 🎨 Diseño |
 
 ---
 
@@ -177,6 +178,39 @@ landing-page-mastery/
 ```
 
 ➡️ [Ver documentación completa](./skills/landing-page-mastery/SKILL.md)
+
+---
+
+### 🎨 Frontend Design
+
+> **Crea interfaces frontend distintivas y de grado de producción con alta calidad de diseño.**
+
+Una skill de Anthropic diseñada para guiar la creación de interfaces que eviten la estética genérica de la IA y apuesten por diseños audaces, memorables y refinados.
+
+**Características:**
+
+| Función | Descripción |
+|---------|-------------|
+| 🖋️ Tipografía | Selección de fuentes únicas y con carácter |
+| 🎨 Color y Temas | Paletas cohesivas y acentos definidos |
+| ✨ Animación | Micro-interacciones y movimientos de alto impacto |
+| 📐 Composición | Layouts inesperados y uso creativo del espacio |
+| 🌫️ Texturas | Fondos con profundidad y efectos visuales modernos |
+
+**Cuando usar esta skill:**
+- Al construir componentes web, landing pages o dashboards.
+- Para "embellecer" una interfaz existente.
+- Cuando buscas un diseño premium que no parezca generado por IA.
+
+**Estructura de la skill:**
+
+```
+frontend-design/
+├── SKILL.md           # Instrucciones y principios de diseño
+└── LICENSE.txt        # Licencia Apache 2.0
+```
+
+➡️ [Ver documentación completa](./skills/frontend-design/SKILL.md)
 
 ---
 
