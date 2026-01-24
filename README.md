@@ -20,7 +20,8 @@ Ejemplos de lo que pueden hacer las skills:
 - 🤖 Automatizar tareas personalizadas
 
 **Más información oficial:**
-- [¿Qué son las skills?](https://support.claude.com/en/articles/12512176-what-are-skills)
+- [¿Qué son las skills?. Guía español](https://aimafia.substack.com/p/skills-ia)
+- [¿Documentación skills odifiacl Claude?](https://support.claude.com/en/articles/12512176-what-are-skills)
 - [Usando skills en Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
 - [Cómo crear skills personalizadas](https://support.claude.com/en/articles/12512198-creating-custom-skills)
 
