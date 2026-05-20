@@ -49,6 +49,8 @@ Ejemplos de lo que pueden hacer las skills:
 | [**OpenRouter**](./skills/openrouter/) | Integración unificada con la API de OpenRouter para usar más de 400 modelos de IA. | 🔌 API |
 | [**Process Interviewer**](./skills/process-interviewer/) | Entrevistador experto que extrae planes concretos de la mente del usuario antes de crear. | 📝 Planificación |
 | [**Prompt Master**](./skills/prompt-master/) | Genera prompts ultra-optimizados para cualquier herramienta o modelo de IA. | 💬 Prompts |
+| [**Repo First Defense**](./skills/repo-first-defense/) | Auditoría defensiva de seguridad para repositorios AI-native (dependencias, GitHub Actions, prompts, MCP). | 🛡️ Seguridad |
+
 
 ---
 
@@ -363,6 +365,15 @@ Crea o adapta prompts perfectos para ChatGPT, Cursor, Midjourney, herramientas d
 ➡️ [Ver documentación completa](./skills/prompt-master/SKILL.md)
 
 ---
+
+### 🛡️ Repo First Defense
+> **Auditoría defensiva para repositorios AI-native.**
+
+Audita y protege repositorios contra ataques de cadena de suministro (supply chain), prompt injection, secretos expuestos y malas configuraciones en GitHub Actions.
+➡️ [Ver documentación completa](./skills/repo-first-defense/SKILL.md)
+
+---
+
 
 ## 🤝 Contribuir
 
