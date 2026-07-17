@@ -10,6 +10,7 @@
 - [Estructura de una Skill](#estructura-de-una-skill)
 - [Buenas Prácticas](#buenas-prácticas)
 - [Pull Requests](#pull-requests)
+- [Proponer skills para la MafiaIA Skill List](#-proponer-skills-para-la-mafiaia-skill-list)
 
 ---
 
@@ -225,6 +226,26 @@ git commit -m "fix(scripts): corregir cálculo de redondeo en IVA"
 # Para documentación
 git commit -m "docs: actualizar guía de contribución"
 ```
+
+---
+
+## 📜 Proponer skills para la MafiaIA Skill List
+
+Además de las skills propias de esta colección, el repo mantiene la [MafiaIA Skill List](LIST.md) (`list.json`): una lista curada de agent skills externas con procedencia verificable.
+
+**Cómo proponer una skill:**
+
+1. Abre un Issue con la etiqueta `skill-proposal` indicando: repo de origen (`owner/repo`), ruta de la skill dentro del repo, qué tecnologías cubre y por qué merece estar en la lista.
+2. O directamente un PR que añada la entrada con el script de alta (fija commit y hash automáticamente):
+   ```bash
+   node scripts/add-skill.mjs <owner/repo> <ruta/de/la/skill> --techs react,nextjs --note "por qué la propones"
+   node scripts/validate.mjs
+   ```
+3. La CI verificará que la entrada es instalable (SKILL.md válido, hash correcto contra el commit fijado).
+
+**Política de curación:** esta es una lista curada personalmente, no un índice abierto. **Solo los maintainers aceptan entradas**, tras revisar el contenido de la skill (utilidad, calidad, seguridad: sin instrucciones destructivas, sin exfiltración, sin prompt injection). Un PR válido técnicamente puede rechazarse por criterio editorial — el valor de la lista es precisamente que todo lo que contiene está revisado.
+
+Las skills de la lista se gestionan e instalan cómodamente con [Skill Control](https://github.com/Mafia-Labs/SkillsControl), nuestra app para gobernar las skills de tus agentes de IA.
 
 ---
 

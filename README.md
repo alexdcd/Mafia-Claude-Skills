@@ -62,7 +62,11 @@ Además de las skills de esta colección, este repo mantiene la **[MafiaIA Skill
 - ➕ Añadir una skill: `node scripts/add-skill.mjs <owner/repo> <ruta> --techs x --note "por qué"` (fija commit y hash automáticamente)
 - ✅ Verificar: `node scripts/validate.mjs`
 
-Semilla inicial: las skills recomendadas por el mapa de [autoskills](https://github.com/midudev/autoskills) (registry auditado) + las skills de esta colección. Es la fuente de recomendaciones de **Skill Control**.
+Semilla inicial: las skills recomendadas por el mapa de [autoskills](https://github.com/midudev/autoskills) (registry auditado) + las skills de esta colección.
+
+Esta lista es la fuente de recomendaciones de **[Skill Control](https://github.com/Mafia-Labs/SkillsControl)** 🎛️ — nuestra app de escritorio para ver, auditar, instalar y gobernar las skills de tus agentes de IA (Claude Code, Codex y compatibles) por proyecto. Si quieres gestionar tus skills sin editar carpetas ocultas a mano, esa es la herramienta.
+
+¿Quieres proponer una skill para la lista? Lee [cómo contribuir](CONTRIBUTING.md#proponer-skills-para-la-mafiaia-skill-list) — toda propuesta es bienvenida, la curación final es siempre del equipo.
 
 ## 🚀 Cómo Usar las Skills
 
