@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MafiaIA Skill List",
+  "type": "object",
+  "required": ["version", "name", "updatedAt", "hashAlgorithm", "skills"],
+  "properties": {
+    "version": { "const": 1 },
+    "name": { "type": "string" },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "hashAlgorithm": { "type": "string" },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "source", "techs", "note", "addedAt"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "source": {
+            "type": "object",
+            "required": ["repo", "path", "commit", "sha256"],
+            "properties": {
+              "repo": { "type": "string", "pattern": "^[^/]+/[^/]+$" },
+              "path": { "type": "string" },
+              "commit": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            },
+            "additionalProperties": false
+          },
+          "upstream": {
+            "type": "object",
+            "description": "Original repo when source is a vendored/synced copy.",
+            "required": ["repo"],
+            "properties": {
+              "repo": { "type": "string" },
+              "commit": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "review": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "enum": ["approved"] },
+              "by": { "type": "string" },
+              "at": { "type": "string" }
+            },
+            "additionalProperties": false
+          },
+          "techs": { "type": "array", "items": { "type": "string" } },
+          "note": { "type": "string" },
+          "addedAt": { "type": "string", "format": "date" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
