@@ -1,7 +1,7 @@
 {
   "version": 1,
   "name": "MafiaIA Skill List",
-  "updatedAt": "2026-07-17T21:12:00.125Z",
+  "updatedAt": "2026-07-17T21:27:38.849Z",
   "hashAlgorithm": "sha256 over \"<relpath>\\0<sha256(file)>\\n\" lines, files sorted by relative path",
   "skills": [
     {
@@ -479,6 +479,22 @@
         "chrome-extension"
       ],
       "note": "Seed: recomendada por el mapa de autoskills (midudev), copia auditada de su registry.",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "claude-api",
+      "name": "claude-api",
+      "description": "|-",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/claude-api",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "a7e8efa3e271fb56ee42842724a3d6681bc7bca2488ca5401c2e00d6a5c44f51"
+      },
+      "techs": [
+        "anthropic"
+      ],
+      "note": "Oficial de Anthropic.",
       "addedAt": "2026-07-17"
     },
     {
@@ -1333,6 +1349,34 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "doc-coauthoring",
+      "name": "doc-coauthoring",
+      "description": "Guide users through a structured workflow for co-authoring documentation. Use when user wants to write documentation, proposals, technical specs, decision docs, or similar structured content. This workflow helps users efficiently transfer context, refine content through iteration, and verify the doc works for readers. Trigger when user mentions writing docs, creating proposals, drafting specs, or similar documentation tasks.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/doc-coauthoring",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "4d0f87156a34eda3df7d19b6a941f73998af6236658458907b69bdaf6127791b"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "docx",
+      "name": "docx",
+      "description": "Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files) or Word templates (.dotx files). Triggers include: any mention of 'Word doc', 'word document', '.docx', '.dotx', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx or .dotx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a 'report', 'memo', 'letter', 'template', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/docx",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "5d2e190b5b548c588603ebf9bc929ce5fd4aac9c6350d6779f3bad4d84d06724"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "dotnet-best-practices",
       "name": "dotnet-best-practices",
       "description": "Ensure .NET/C# code meets best practices for the solution/project.",
@@ -1825,6 +1869,22 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "gh-fix-ci",
+      "name": "gh-fix-ci",
+      "description": "Use when a user asks to debug or fix failing GitHub PR checks that run in GitHub Actions; use `gh` to inspect checks and logs, summarize failure context, draft a fix plan, and implement only after explicit approval. Treat external providers (for example Buildkite) as out of scope and report only the details URL.",
+      "source": {
+        "repo": "openai/skills",
+        "path": "skills/.curated/gh-fix-ci",
+        "commit": "49f948faa9258a0c61caceaf225e179651397431",
+        "sha256": "40662e9d4177f242fb571c9c60395ee9677a07fa45ce36dc7f533412db93c060"
+      },
+      "techs": [
+        "github-actions"
+      ],
+      "note": "Oficial de OpenAI.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "golang-patterns",
       "name": "golang-patterns",
       "description": "Idiomatic Go patterns, best practices, and conventions for building robust, efficient, and maintainable Go applications.",
@@ -2240,6 +2300,272 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "mafia-agent-browser",
+      "name": "agent-browser",
+      "description": "Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to \"open a website\", \"fill out a form\", \"click a button\", \"take a screenshot\", \"scrape data from a page\", \"test this web app\", \"login to a site\", \"automate browser actions\", or any task requiring programmatic web interaction.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/agent-browser",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "13b8523cf1803ce1324c6f3dcaefce755d78c6d3555a9f0d8f46263639f83de5"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-audio-transcriber",
+      "name": "audio-transcriber",
+      "description": "Transform audio recordings into professional Markdown documentation with intelligent summaries using LLM integration",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/audio-transcriber",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "06c76b03659ccb8db2ff675d376910a442c29b292b41bf7ab31f4e716be89b86"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-decision-toolkit",
+      "name": "decision-toolkit",
+      "description": "Generate structured decision-making tools — step-by-step guides, bias checkers, scenario explorers, and interactive dashboards. Use when facing significant choices requiring systematic analysis. Supports multiple cognitive styles and output formats.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/decision-toolkit",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "773dfaeb51eb0ca4f5f86c44a308e42ad7c9e113f30bdd49f9277e5d2fd576d2"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-deep-research",
+      "name": "deep-research",
+      "description": "This skill should be used when conducting comprehensive research on any topic using the OpenAI Deep Research API. It automates prompt enhancement through interactive clarifying questions, saves research parameters, and executes deep research with web search capabilities. Use when the user asks for in-depth analysis, investigation, research summaries, or topic exploration.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/deep-research",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "85593851119a20009e7d85c19628e54372c0bbf7f082ca9f75b158da09844589"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-fact-checker",
+      "name": "fact-checker",
+      "description": "|",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/fact-checker",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "77bd2272610361a384465e6c08c541a1e1037af1a47ea1158af352efe583eec6"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-file-organizer",
+      "name": "file-organizer",
+      "description": "Intelligently organizes your files and folders across your computer by understanding context, finding duplicates, suggesting better structures, and automating cleanup tasks. Reduces cognitive load and keeps your digital workspace tidy without manual effort.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/file-organizer",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "abbcb989ff53b1264a85e7bed1d87b30e4690c5898a13119413ff4ba2222fd96"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-find-skills",
+      "name": "find-skills",
+      "description": "Helps users discover and install agent skills when they ask questions like \"how do I do X\", \"find a skill for X\", \"is there a skill that can...\", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/find-skills",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "34a4ce007b198ede69b75eed139a6199e68da3cb81af96d25c38a49cdab999fe"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-frontend-design",
+      "name": "frontend-design",
+      "description": "Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/frontend-design",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "2bb2891e39413facb74f218832078ab0414e4fa7954243d6486920d557b248c4"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-frontend-slides",
+      "name": "frontend-slides",
+      "description": "Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. Use when the user wants to build a presentation, convert a PPT/PPTX to web, or create slides for a talk/pitch. Helps non-designers discover their aesthetic through visual exploration rather than abstract choices.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/frontend-slides",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "f3a84267f92e98bb15ed3e42e1825debe9ad7680da7f8df4ce12c82f109df4ff"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-frontier-plan-opencode-executor",
+      "name": "frontier-plan-opencode-executor",
+      "description": "Use when given a detailed implementation plan from a frontier AI to execute inside OpenCode with non-frontier coding models. Validates the plan against the real repository, breaks it into safe steps, verifies each step, inspects diffs, and prevents destructive changes. Triggers on: receiving a multi-step plan from Claude Opus/GPT-5/etc., executing a pre-written spec, implementing a detailed PR description, or being told to \\\"execute this plan step by step.\\\"",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/frontier-plan-opencode-executor",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "7e6ff84b570d1f8977a8766354427b0c0d5386b5dd4e4e0d495838ebc8621a8b"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-gestor-autonomos",
+      "name": "gestor-autonomos",
+      "description": ">",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/gestor-autonomos",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "f9ee77982d88df6fa7c1eaeb7c0adc83b832734c3af8fb6cf370326449e8f212"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-humanizer",
+      "name": "humanizer",
+      "description": "|",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/humanizer",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "13dc6612a5185b30d68fb0de0de91c236ed0373a8590dfd4d846eb2f7dc32da6"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-landing-page-mastery",
+      "name": "landing-page-mastery",
+      "description": ">",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/landing-page-mastery",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "9b7129b3c205648c83a6d29b57a095ae99aef2470091cfd97e451cc2b5edeab0"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-mcp-builder",
+      "name": "mcp-builder",
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/mcp-builder",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "a8978dd810d2452739f7a28c291dd4dae6854c3f10eb8280f34bfc22407f3286"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-openrouter",
+      "name": "openrouter",
+      "description": "OpenRouter API - Unified access to 400+ AI models through one API",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/openrouter",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "eb0a5099b387d2e10a66f323ba52c9c442ca439610f851fef141d1e5aa1161ef"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-process-interviewer",
+      "name": "process-interviewer",
+      "description": "Relentless process interviewer that extracts a complete, unambiguous plan from the user's head before any building begins. Use when the user wants to plan a complex task, design a process, build a skill, create a workflow, scope a project, or says things like \"I want to build\", \"let's plan\", \"help me think through\", \"I have an idea for\", \"scope this out\", \"interview me\", \"help me figure out the process\", \"I need a skill that\", or any variation where the user has a fuzzy idea that needs to be sharpened into a concrete plan. Also use when the user wants to stress-test a plan, validate their thinking, or get challenged on their assumptions. If the user's goal is to build a skill, this interviewer will automatically create it after the interview is complete. ALWAYS use this skill before jumping into building anything complex. Even if the user seems confident, the interview reveals gaps they didn't know they had.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/process-interviewer",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "eb7fd466b8b515f9a3f1da8c06d709c766deba918278b839428a6708f5de7941"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-prompt-master",
+      "name": "prompt-master",
+      "description": "Generates optimized prompts for any AI tool. Use when writing, fixing, improving, or adapting a prompt for LLM, Cursor, Midjourney, image AI, video AI, coding agents, or any other AI tool.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/prompt-master",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "f33ed89d8f145ca30a0db5a4a23ba4706319ed7af51cb046dca3234ef3d38b48"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-repo-first-defense",
+      "name": "repo-first-defense",
+      "description": "Auditoría defensiva para repositorios AI-native. Usar SIEMPRE que el usuario quiera revisar un repo antes de lanzar, mergear, actualizar dependencias, migrar package manager, configurar un agente IA, MCP, Claude/Cursor/Codex/OpenClaw, o cuando mencione supply chain, prompt injection, secretos, GitHub Actions, npm/pnpm, paquetes maliciosos, scripts peligrosos, o riesgos de seguridad en repos con IA. Activar también si el usuario dice \"revisa el repo\", \"está seguro esto\", \"antes de producción\", \"audita el PR\" o cualquier variación.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/repo-first-defense",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "b5da560edf157e299263b7d2722e33e64affb41cdf0779a6cfc5e660c3c95ff2"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "mafia-vercel-react-best-practices",
+      "name": "vercel-react-best-practices",
+      "description": "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.",
+      "source": {
+        "repo": "alexdcd/Mafia-Claude-Skills",
+        "path": "skills/vercel-react-best-practices",
+        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
+        "sha256": "69f33953cc6910fcce80423a609c963153ad0b0b49ddbbfaa5ade05fbcd67935"
+      },
+      "techs": [],
+      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "migrate-to-vinext",
       "name": "migrate-to-vinext",
       "description": "Migrates Next.js projects to vinext (Vite-based Next.js reimplementation). Load when asked to migrate, convert, or switch from Next.js to vinext. Handles compatibility scanning, package replacement, Vite config generation, ESM conversion, and deployment setup (Cloudflare Workers natively, other platforms via Nitro).",
@@ -2491,6 +2817,22 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "openai-docs",
+      "name": "openai-docs",
+      "description": "Use when the user asks how to build with OpenAI products or APIs, asks about Codex itself or choosing Codex surfaces, needs up-to-date official documentation with citations, help choosing the latest model for a use case, or model upgrade and prompt-upgrade guidance; use OpenAI docs MCP tools for non-Codex docs questions, use the Codex manual helper first for broad Codex self-knowledge, and restrict fallback browsing to official OpenAI domains.",
+      "source": {
+        "repo": "openai/skills",
+        "path": "skills/.curated/openai-docs",
+        "commit": "49f948faa9258a0c61caceaf225e179651397431",
+        "sha256": "f2c90216c2d084fcda46d075b98a7993ea17faebafff8b1e90978f0bd48f517f"
+      },
+      "techs": [
+        "openai"
+      ],
+      "note": "Oficial de OpenAI.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "organization",
       "name": "organization-best-practices",
       "description": "Configure multi-tenant organizations, manage members and invitations, define custom roles and permissions, set up teams, and implement RBAC using Better Auth's organization plugin. Use when users need org setup, team management, member roles, access control, or the Better Auth organization plugin.",
@@ -2577,6 +2919,20 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "pdf",
+      "name": "pdf",
+      "description": "Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/pdf",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "2111f26786dfa114a3d1813af41c7bcee0dea5a52170c67494b08a94e1f40e1c"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "php-pro",
       "name": "php-pro",
       "description": "Use when building PHP applications with modern PHP 8.3+ features, Laravel, or Symfony frameworks. Invokes strict typing, PHPStan level 9, async patterns with Swoole, and PSR standards. Creates controllers, configures middleware, generates migrations, writes PHPUnit/Pest tests, defines typed DTOs and value objects, sets up dependency injection, and scaffolds REST/GraphQL APIs. Use when working with Eloquent, Doctrine, Composer, Psalm, ReactPHP, or any PHP API development.",
@@ -2615,6 +2971,20 @@
         "playwright"
       ],
       "note": "Seed: recomendada por el mapa de autoskills (midudev), copia auditada de su registry.",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "pptx",
+      "name": "pptx",
+      "description": "Use this skill any time a .pptx or .potx file is involved in any way — as input, output, or both. This includes: creating slide decks, pitch decks, or presentations; reading, parsing, or extracting text from any .pptx or .potx file (even if the extracted content will be used elsewhere, like in an email or summary); editing, modifying, or updating existing presentations; combining or splitting slide files; working with templates (.potx), layouts, speaker notes, or comments. Trigger whenever the user mentions \\\"deck,\\\" \\\"slides,\\\" \\\"presentation,\\\" or references a .pptx or .potx filename, regardless of what they plan to do with the content afterward. If a .pptx or .potx file needs to be opened, created, or touched, use this skill.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/pptx",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "aae0909a9f353f6773ebe77fb570b48ab618968be9607228e7c3558347d25506"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
       "addedAt": "2026-07-17"
     },
     {
@@ -3370,6 +3740,38 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "security-best-practices",
+      "name": "security-best-practices",
+      "description": "Perform language and framework specific security best-practice reviews and suggest improvements. Trigger only when the user explicitly requests security best practices guidance, a security review/report, or secure-by-default coding help. Trigger only for supported languages (python, javascript/typescript, go). Do not trigger for general code review, debugging, or non-security tasks.",
+      "source": {
+        "repo": "openai/skills",
+        "path": "skills/.curated/security-best-practices",
+        "commit": "49f948faa9258a0c61caceaf225e179651397431",
+        "sha256": "11fc4f203478f5a3b87d78450ac5b79991adc5a27cf1ff558e5ecc4daa59aaa4"
+      },
+      "techs": [
+        "security"
+      ],
+      "note": "Oficial de OpenAI.",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "security-threat-model",
+      "name": "security-threat-model",
+      "description": "Repository-grounded threat modeling that enumerates trust boundaries, assets, attacker capabilities, abuse paths, and mitigations, and writes a concise Markdown threat model. Trigger only when the user explicitly asks to threat model a codebase or path, enumerate threats/abuse paths, or perform AppSec threat modeling. Do not trigger for general architecture summaries, code review, or non-security design work.",
+      "source": {
+        "repo": "openai/skills",
+        "path": "skills/.curated/security-threat-model",
+        "commit": "49f948faa9258a0c61caceaf225e179651397431",
+        "sha256": "96d73ad7eec74dcb144a0d48ed1243d79665aa25c90621f7659ad2b4218a65d5"
+      },
+      "techs": [
+        "security"
+      ],
+      "note": "Oficial de OpenAI.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "senior-data-scientist",
       "name": "senior-data-scientist",
       "description": "World-class data science skill for statistical modeling, experimentation, causal inference, and advanced analytics. Expertise in Python (NumPy, Pandas, Scikit-learn), R, SQL, statistical methods, A/B testing, time series, and business intelligence. Includes experiment design, feature engineering, model evaluation, and stakeholder communication. Use when designing experiments, building predictive models, performing causal analysis, or driving data-driven decisions.",
@@ -3413,6 +3815,20 @@
         "shadcn"
       ],
       "note": "Seed: recomendada por el mapa de autoskills (midudev), copia auditada de su registry.",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "skill-creator",
+      "name": "skill-creator",
+      "description": "Create new skills, modify and improve existing skills, and measure skill performance. Use when users want to create a skill from scratch, edit, or optimize an existing skill, run evals to test a skill, benchmark skill performance with variance analysis, or optimize a skill's description for better triggering accuracy.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/skill-creator",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "b016b0011ee9cee8ba46dfed19ccde8f1d8e0ea6edc60ea90b3962d35e8b013a"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
       "addedAt": "2026-07-17"
     },
     {
@@ -4238,6 +4654,20 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "web-artifacts-builder",
+      "name": "web-artifacts-builder",
+      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies (React, Tailwind CSS, shadcn/ui). Use for complex artifacts requiring state management, routing, or shadcn/ui components - not for simple single-file HTML/JSX artifacts.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/web-artifacts-builder",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "09271987cabca98fe5817508c6b2981ca8d5ae61b07ceb3ee544edfc420e92fd"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "web-perf",
       "name": "web-perf",
       "description": "Analyzes web performance using Chrome DevTools MCP. Measures Core Web Vitals (LCP, INP, CLS) and supplementary metrics (FCP, TBT, Speed Index), identifies render-blocking resources, network dependency chains, layout shifts, caching issues, and accessibility gaps. Use when asked to audit, profile, debug, or optimize page load performance, Lighthouse scores, or site speed. Biases towards retrieval from current documentation over pre-trained knowledge.",
@@ -4255,6 +4685,22 @@
         "cloudflare"
       ],
       "note": "Seed: recomendada por el mapa de autoskills (midudev), copia auditada de su registry.",
+      "addedAt": "2026-07-17"
+    },
+    {
+      "id": "webapp-testing",
+      "name": "webapp-testing",
+      "description": "Toolkit for interacting with and testing local web applications using Playwright. Supports verifying frontend functionality, debugging UI behavior, capturing browser screenshots, and viewing browser logs.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/webapp-testing",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "7dd9eedc497fbf8b5634a293190b11f93cf4b80f7cd6c1a775def12deadeebb9"
+      },
+      "techs": [
+        "testing"
+      ],
+      "note": "Oficial de Anthropic.",
       "addedAt": "2026-07-17"
     },
     {
@@ -4478,6 +4924,20 @@
       "addedAt": "2026-07-17"
     },
     {
+      "id": "xlsx",
+      "name": "xlsx",
+      "description": "Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .xltx, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \\\"the xlsx in my downloads\\\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.",
+      "source": {
+        "repo": "anthropics/skills",
+        "path": "skills/xlsx",
+        "commit": "fa0fa64bdc967915dc8399e803be67759e1e62b8",
+        "sha256": "078dc377f9dc47fed4a035f19287970a5e495a743b48723f8c46f0f97f3089ec"
+      },
+      "techs": [],
+      "note": "Oficial de Anthropic.",
+      "addedAt": "2026-07-17"
+    },
+    {
       "id": "zod",
       "name": "zod",
       "description": "Zod schema validation best practices for type safety, parsing, and error handling. This skill should be used when defining z.object schemas, using z.string validations, safeParse, or z.infer. This skill does NOT cover React Hook Form integration patterns (use react-hook-form skill) or OpenAPI client generation (use orval skill).",
@@ -4496,272 +4956,6 @@
         "zod"
       ],
       "note": "Seed: recomendada por el mapa de autoskills (midudev), copia auditada de su registry.",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-agent-browser",
-      "name": "agent-browser",
-      "description": "Browser automation CLI for AI agents. Use when the user needs to interact with websites, including navigating pages, filling forms, clicking buttons, taking screenshots, extracting data, testing web apps, or automating any browser task. Triggers include requests to \"open a website\", \"fill out a form\", \"click a button\", \"take a screenshot\", \"scrape data from a page\", \"test this web app\", \"login to a site\", \"automate browser actions\", or any task requiring programmatic web interaction.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/agent-browser",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "13b8523cf1803ce1324c6f3dcaefce755d78c6d3555a9f0d8f46263639f83de5"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-audio-transcriber",
-      "name": "audio-transcriber",
-      "description": "Transform audio recordings into professional Markdown documentation with intelligent summaries using LLM integration",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/audio-transcriber",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "06c76b03659ccb8db2ff675d376910a442c29b292b41bf7ab31f4e716be89b86"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-decision-toolkit",
-      "name": "decision-toolkit",
-      "description": "Generate structured decision-making tools — step-by-step guides, bias checkers, scenario explorers, and interactive dashboards. Use when facing significant choices requiring systematic analysis. Supports multiple cognitive styles and output formats.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/decision-toolkit",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "773dfaeb51eb0ca4f5f86c44a308e42ad7c9e113f30bdd49f9277e5d2fd576d2"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-deep-research",
-      "name": "deep-research",
-      "description": "This skill should be used when conducting comprehensive research on any topic using the OpenAI Deep Research API. It automates prompt enhancement through interactive clarifying questions, saves research parameters, and executes deep research with web search capabilities. Use when the user asks for in-depth analysis, investigation, research summaries, or topic exploration.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/deep-research",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "85593851119a20009e7d85c19628e54372c0bbf7f082ca9f75b158da09844589"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-fact-checker",
-      "name": "fact-checker",
-      "description": "|",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/fact-checker",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "77bd2272610361a384465e6c08c541a1e1037af1a47ea1158af352efe583eec6"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-file-organizer",
-      "name": "file-organizer",
-      "description": "Intelligently organizes your files and folders across your computer by understanding context, finding duplicates, suggesting better structures, and automating cleanup tasks. Reduces cognitive load and keeps your digital workspace tidy without manual effort.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/file-organizer",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "abbcb989ff53b1264a85e7bed1d87b30e4690c5898a13119413ff4ba2222fd96"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-find-skills",
-      "name": "find-skills",
-      "description": "Helps users discover and install agent skills when they ask questions like \"how do I do X\", \"find a skill for X\", \"is there a skill that can...\", or express interest in extending capabilities. This skill should be used when the user is looking for functionality that might exist as an installable skill.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/find-skills",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "34a4ce007b198ede69b75eed139a6199e68da3cb81af96d25c38a49cdab999fe"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-frontend-design",
-      "name": "frontend-design",
-      "description": "Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/frontend-design",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "2bb2891e39413facb74f218832078ab0414e4fa7954243d6486920d557b248c4"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-frontend-slides",
-      "name": "frontend-slides",
-      "description": "Create stunning, animation-rich HTML presentations from scratch or by converting PowerPoint files. Use when the user wants to build a presentation, convert a PPT/PPTX to web, or create slides for a talk/pitch. Helps non-designers discover their aesthetic through visual exploration rather than abstract choices.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/frontend-slides",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "f3a84267f92e98bb15ed3e42e1825debe9ad7680da7f8df4ce12c82f109df4ff"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-frontier-plan-opencode-executor",
-      "name": "frontier-plan-opencode-executor",
-      "description": "Use when given a detailed implementation plan from a frontier AI to execute inside OpenCode with non-frontier coding models. Validates the plan against the real repository, breaks it into safe steps, verifies each step, inspects diffs, and prevents destructive changes. Triggers on: receiving a multi-step plan from Claude Opus/GPT-5/etc., executing a pre-written spec, implementing a detailed PR description, or being told to \\\"execute this plan step by step.\\\"",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/frontier-plan-opencode-executor",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "7e6ff84b570d1f8977a8766354427b0c0d5386b5dd4e4e0d495838ebc8621a8b"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-gestor-autonomos",
-      "name": "gestor-autonomos",
-      "description": ">",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/gestor-autonomos",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "f9ee77982d88df6fa7c1eaeb7c0adc83b832734c3af8fb6cf370326449e8f212"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-humanizer",
-      "name": "humanizer",
-      "description": "|",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/humanizer",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "13dc6612a5185b30d68fb0de0de91c236ed0373a8590dfd4d846eb2f7dc32da6"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-landing-page-mastery",
-      "name": "landing-page-mastery",
-      "description": ">",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/landing-page-mastery",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "9b7129b3c205648c83a6d29b57a095ae99aef2470091cfd97e451cc2b5edeab0"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-mcp-builder",
-      "name": "mcp-builder",
-      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use when building MCP servers to integrate external APIs or services, whether in Python (FastMCP) or Node/TypeScript (MCP SDK).",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/mcp-builder",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "a8978dd810d2452739f7a28c291dd4dae6854c3f10eb8280f34bfc22407f3286"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-openrouter",
-      "name": "openrouter",
-      "description": "OpenRouter API - Unified access to 400+ AI models through one API",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/openrouter",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "eb0a5099b387d2e10a66f323ba52c9c442ca439610f851fef141d1e5aa1161ef"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-process-interviewer",
-      "name": "process-interviewer",
-      "description": "Relentless process interviewer that extracts a complete, unambiguous plan from the user's head before any building begins. Use when the user wants to plan a complex task, design a process, build a skill, create a workflow, scope a project, or says things like \"I want to build\", \"let's plan\", \"help me think through\", \"I have an idea for\", \"scope this out\", \"interview me\", \"help me figure out the process\", \"I need a skill that\", or any variation where the user has a fuzzy idea that needs to be sharpened into a concrete plan. Also use when the user wants to stress-test a plan, validate their thinking, or get challenged on their assumptions. If the user's goal is to build a skill, this interviewer will automatically create it after the interview is complete. ALWAYS use this skill before jumping into building anything complex. Even if the user seems confident, the interview reveals gaps they didn't know they had.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/process-interviewer",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "eb7fd466b8b515f9a3f1da8c06d709c766deba918278b839428a6708f5de7941"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-prompt-master",
-      "name": "prompt-master",
-      "description": "Generates optimized prompts for any AI tool. Use when writing, fixing, improving, or adapting a prompt for LLM, Cursor, Midjourney, image AI, video AI, coding agents, or any other AI tool.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/prompt-master",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "f33ed89d8f145ca30a0db5a4a23ba4706319ed7af51cb046dca3234ef3d38b48"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-repo-first-defense",
-      "name": "repo-first-defense",
-      "description": "Auditoría defensiva para repositorios AI-native. Usar SIEMPRE que el usuario quiera revisar un repo antes de lanzar, mergear, actualizar dependencias, migrar package manager, configurar un agente IA, MCP, Claude/Cursor/Codex/OpenClaw, o cuando mencione supply chain, prompt injection, secretos, GitHub Actions, npm/pnpm, paquetes maliciosos, scripts peligrosos, o riesgos de seguridad en repos con IA. Activar también si el usuario dice \"revisa el repo\", \"está seguro esto\", \"antes de producción\", \"audita el PR\" o cualquier variación.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/repo-first-defense",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "b5da560edf157e299263b7d2722e33e64affb41cdf0779a6cfc5e660c3c95ff2"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
-      "addedAt": "2026-07-17"
-    },
-    {
-      "id": "mafia-vercel-react-best-practices",
-      "name": "vercel-react-best-practices",
-      "description": "React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.",
-      "source": {
-        "repo": "alexdcd/Mafia-Claude-Skills",
-        "path": "skills/vercel-react-best-practices",
-        "commit": "eb7b13f4ee45e8050b69fbd7c6e7d26a5ff5a37f",
-        "sha256": "69f33953cc6910fcce80423a609c963153ad0b0b49ddbbfaa5ade05fbcd67935"
-      },
-      "techs": [],
-      "note": "Seed: curada a mano en Mafia-Claude-Skills (La Mafia IA).",
       "addedAt": "2026-07-17"
     }
   ]
